@@ -11,7 +11,7 @@
     <style>
         iframe{
             width: 100%;
-            height: 250px;
+            height: 400px;
         }
     </style>
 </head>
@@ -20,57 +20,27 @@
         <div class="container pt-2 pb-1">
             <div class="d-flex justify-content-center">
                     <button class="btn btn-success btn-sm me-2" id="btnStart">Start</button>
+                    <button class="btn btn-success btn-sm me-2" id="btnStop">Stop</button>
             </div>
         </div>
         <div class="container pt-2 pb-1">
             <div class="d-flex justify-content-center">
-                    <button class="btn btn-primary btn-sm me-2" id="btnPrevious">Previous All</button>
-                    <button class="btn btn-primary btn-sm me-2" id="btnRandom">Random All</button>
-                    <button class="btn btn-primary btn-sm me-2" id="btnNext">Next All</button>
+                    <button class="btn btn-primary btn-sm me-2 disabled" id="btnPrevious">Previous All</button>
+                    <button class="btn btn-primary btn-sm me-2 disabled" id="btnRandom">Random All</button>
+                    <button class="btn btn-primary btn-sm me-2 disabled" id="btnNext">Next All</button>
             </div>
         </div>
-        <div class="container py-2">
-            <div class="row">
-                <div class="col-lg-6 p-2">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="text-center">
-                                <p> Land <span class="title">?</span></p>
-                            </div>
-                            <iframe class="frame" src="" frameborder="0" data-number="" id="frame1"></iframe>
-                        </div>
-                    </div>
+        <div class="container pt-2 pb-1">
+            <div class="d-flex justify-content-center">
+                <div class="col-lg-1 me-2">
+                    <input type="number" class="form-control" name="number" id="number">
                 </div>
-                <div class="col-lg-6 p-2">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="text-center">
-                                <p> Land <span class="title">?</span></p>
-                            </div>
-                            <iframe class="frame" src="" frameborder="0" data-number="" id="frame2"></iframe>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6 p-2">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="text-center">
-                                <p> Land <span class="title">?</span></p>
-                            </div>
-                            <iframe class="frame" src="" frameborder="0" data-number="" id="frame3"></iframe>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6 p-2">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="text-center">
-                                <p> Land <span class="title">?</span></p>
-                            </div>
-                            <iframe class="frame" src="" frameborder="0" data-number="" id="frame4"></iframe>
-                        </div>
-                    </div>
-                </div>
+                <button class="btn btn-primary btn-sm me-2" id="btnAddLand">Add Land</button>
+                <button class="btn btn-danger btn-sm me-2" id="btnRemoveLand">Remove Land</button>
+            </div>
+        </div>
+        <div class="container-fluid py-2">
+            <div class="row frame-container">
                 
             </div>
         </div>
@@ -81,6 +51,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
 <script>
 $(document).ready(function(){
+    
     $("#btnStart").click(function(){
         $(".frame").each(function(){
             var randomNumber = Math.floor(Math.random() * 5000) + 1;
@@ -89,6 +60,30 @@ $(document).ready(function(){
             $(this).siblings(".text-center").find("span.title").text(randomNumber);
         });
         $("#btnStart").addClass('disabled');
+        $("#btnStop").removeClass('disabled');
+        $("#btnRandom").removeClass('disabled');
+        $("#btnNext").removeClass('disabled');
+        $("#btnPrevious").removeClass('disabled');
+        $("#btnAddLand").addClass('disabled');
+        $("#btnRemoveLand").addClass('disabled');
+        $("#number").prop('readonly', true);
+
+    });
+    $("#btnStop").click(function(){
+        $(".frame").each(function(){
+            
+            $(this).attr("src", "");
+            $(this).attr("data-number", "");
+            $(this).siblings(".text-center").find("span.title").text("?");
+        });
+        $("#btnStart").removeClass('disabled');
+        $("#btnStop").addClass('disabled');
+        $("#btnRandom").addClass('disabled');
+        $("#btnNext").addClass('disabled');
+        $("#btnPrevious").addClass('disabled');
+        $("#btnAddLand").removeClass('disabled');
+        $("#btnRemoveLand").removeClass('disabled');
+
     });
     $("#btnRandom").click(function(){
         $(".frame").each(function(){
@@ -120,6 +115,39 @@ $(document).ready(function(){
             $(this).siblings(".text-center").find("span.title").text(previousNumber);
         });
     });
+
+    $("#btnAddLand").click(function(){
+        var numberOfFrames = parseInt($('#number').val());
+        for (var i = 0; i < numberOfFrames; i++) {
+            var $newFrameCol = $('<div>', { class: 'col-lg-6 p-2' });
+            var $newFrameCard = $('<div>', { class: 'card' });
+            var $newFrameCardBody = $('<div>', { class: 'card-body' });
+            var $newFrameTextCenter = $('<div>', { class: 'text-center' });
+            var $newFrameParagraph = $('<p>').text('Land ').append($('<span>', { class: 'title' }).text('?'));
+            var $newFrame = $('<iframe>', {
+                class: 'frame',
+                src: '',
+                frameborder: '0',
+                'data-number': '',
+                id: 'frame' + ($('.frame').length + 1)
+            });
+            
+            $newFrameTextCenter.append($newFrameParagraph);
+            $newFrameCardBody.append($newFrameTextCenter, $newFrame);
+            $newFrameCard.append($newFrameCardBody);
+            $newFrameCol.append($newFrameCard);
+            
+            $('.frame-container').append($newFrameCol);
+        }
+    });
+    $("#btnRemoveLand").click(function(){
+        $('.frame-container').empty();
+        $("#number").prop('readonly', false);
+    });
+
+    
+
+
 });
 </script>
 </html>
